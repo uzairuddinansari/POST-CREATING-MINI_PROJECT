@@ -4,7 +4,8 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 mongoose.connect(process.env.MON_URL)
-console.log("Mongo URL:", process.env.MON_URL);
+    .then(() => console.log("Connected to MongoDB successfully"))
+    .catch((err) => console.error("MongoDB connection error:", err.message));
 
 const userSchema = new mongoose.Schema({
     username:{
