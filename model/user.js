@@ -1,5 +1,8 @@
 const mongoose = require("mongoose")
-
+const dns = require("dns");
+// const { default: mongoose } = require("mongoose");
+const { errorMonitor } = require("stream");
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 const dotenv = require('dotenv');
 dotenv.config();
 

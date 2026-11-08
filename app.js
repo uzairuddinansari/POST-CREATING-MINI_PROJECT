@@ -9,6 +9,7 @@ const PostModel = require('./model/post');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const isloggin = require("./middleware/isLogging")
 
 app.use(cookieParser());
 app.use(express.json());
@@ -23,6 +24,39 @@ app.get('/',(req,res)=>{
 
 app.get('/login',(req,res)=>{
     res.render('login');
+})
+
+app.get('/logout',(req,res)=>{
+    const token = req.cookies
+    res.cookie("token", "", {
+            httpOnly: true,
+    });
+    res.redirect("/login")
+})
+
+app.get("/profile", isloggin , async(req,res)=>{
+    let user = await UserModel.findOne({email:req.user.email}).populate("posts")
+    console.log(user);
+
+
+    res.render("profile",{user})
+})
+
+// Creating Post's
+
+app.post("/create/post", isloggin ,async(req,res)=>{
+    let user = await UserModel.findOne({email:req.user.email})
+    const {content,title} = req.body
+    let post = await PostModel.create({
+        user: user._id,
+        content,
+        title,
+    })
+
+    user.posts.push(post._id)
+    await user.save();
+    res.redirect("/profile")
+
 })
 
 app.post('/signup', async (req, res) => {
@@ -80,19 +114,13 @@ app.post('/login', async (req, res) => {
             httpOnly: true,
         });
 
-        res.status(200).send("you can log in");
+        res.redirect("/profile")
+        
     } catch (err) {
         console.error("Login error:", err);
         res.status(500).send("Internal server error");
     }
 });
-
-
-
-
-
-
-
 
 
 app.listen(port,()=>{

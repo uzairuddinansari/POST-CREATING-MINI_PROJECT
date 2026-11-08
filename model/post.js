@@ -9,6 +9,10 @@ const postShema = new mongoose.Schema({
         type:String,
         required:true
     },
+    title:{
+        type:String,
+        required:true,
+    },
     date:{
         type:Date,
         default:Date.now
