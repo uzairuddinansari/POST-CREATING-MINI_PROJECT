@@ -19,11 +19,15 @@ app.set("view engine", "ejs")
 
 
 app.get('/',(req,res)=>{
-    res.render('index');
+    res.render('login');
 })
 
 app.get('/login',(req,res)=>{
     res.render('login');
+})
+
+app.get('/signup',(req,res)=>{
+    res.render('index');
 })
 
 app.get('/logout',(req,res)=>{
@@ -36,13 +40,32 @@ app.get('/logout',(req,res)=>{
 
 app.get("/profile", isloggin , async(req,res)=>{
     let user = await UserModel.findOne({email:req.user.email}).populate("posts")
-    console.log(user);
-
-
     res.render("profile",{user})
 })
 
 // Creating Post's
+
+app.get("/like/post/:id", isloggin, async (req, res) => {
+    try {
+        let post = await PostModel.findOne({_id: req.params.id}).populate("user");
+
+        if (!post) {
+            return res.status(404).send("Post not found");
+        }
+
+        if(post.like.indexOf(req.user.userId) === -1){
+            post.like.push(req.params.id);
+        }else{
+            post.like.splice(post.like.indexOf(req.user.userId) ,1);
+        }
+         await post.save();
+        res.redirect("/profile");
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).send("Like failed");
+    }
+});
 
 app.post("/create/post", isloggin ,async(req,res)=>{
     let user = await UserModel.findOne({email:req.user.email})

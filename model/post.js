@@ -16,8 +16,11 @@ const postShema = new mongoose.Schema({
     date:{
         type:Date,
         default:Date.now
-    }
-   
+    },
+    like:[{
+         type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    }]
 })
 
 module.exports = mongoose.model("Post",postShema)

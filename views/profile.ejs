@@ -1,25 +1,89 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>My Profile</title>
+    <link rel="stylesheet" href="../stylesheets/profile.css">
 </head>
 <body>
-    <h1>Your Profile</h1>
-    <div>
-        <h1>create Your post</h1>
-        <form action="/create/post" method="post">
-            <input type="text" placeholder="Title" name="title">
-            <input type="text" placeholder="Enter Your Post Data" name="content">
-             <button type="submit">Create Post</button>
-        </form>
-        <div>
-            <h1>Title</h1>
-            <p>Hello I am Uzair ansari</p>
-             <button>☆*: .｡. o(≧▽≦)o .｡.:*☆</button>
-        </div>
-    </div>
-    <a href="/logout"><button>Log Out</button></a>
+
+    <header>
+        <h2>My Profile</h2>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </header>
+
+    <main>
+
+        <section class="create-post">
+            <h2>Create Your Post</h2>
+
+            <form action="/create/post" method="POST">
+                <input
+                    type="text"
+                    name="title"
+                    placeholder="Enter Post Title"
+                    required
+                >
+
+                <textarea
+                    name="content"
+                    placeholder="Write something..."
+                    required
+                ></textarea>
+
+                <button type="submit">Create Post</button>
+            </form>
+        </section>
+
+        <section class="posts">
+            <h2>Your Posts</h2>
+
+            <% if (user.posts && user.posts.length > 0) { %>
+
+                <% user.posts.slice().reverse().forEach((post) => { %>
+
+                    <div class="post-card">
+
+                        <h3><%= post.title || "Empty Title" %></h3>
+
+                        <p><%= post.content %></p>
+
+                        <div class="post-actions">
+
+                            <% const liked = post.like.some(id => id.toString() === user._id.toString()); %>
+
+                            <a
+                                href="/like/post/<%= post._id %>"
+                                class="like-btn <%= liked ? 'liked' : '' %>"
+                            >
+                                <%= liked ? "Dislike" : "Like" %>
+                            </a>
+
+                            <small><%= post.like.length %> Likes</small>
+
+                            <a href="/update/post/<%= post._id %>" class="edit-btn">
+                                Edit Post
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                <% }) %>
+
+            <% } else { %>
+
+                <p class="empty-message">
+                    You haven't created any posts yet.
+                </p>
+
+            <% } %>
+
+        </section>
+
+    </main>
+
 </body>
 </html>
